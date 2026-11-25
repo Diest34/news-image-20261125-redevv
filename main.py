@@ -1,30 +1,72 @@
 #!/usr/bin/env python3
-"""Entry for make.fun news-image-20261125.
+"""News Image — 25 November 2026.
 
-Copies the bundled front-page image to the harness output path.
-The image sums up the world news of Wednesday, 25 November 2026:
-the Houthis threatening Jeddah's ports as the Saudi-led coalition
-strikes Hodeidah, the Brooklyn jury convicting Huawei on 10 of 12
-counts, gunmen holding 25 hostage in a Cartagena supermarket,
-Zelensky accusing the U.S. of blocking paid missile deliveries,
-and Germany forecasting a record one-trillion-euro tax haul.
+Reproduces this entry's image: the program takes the entry artwork that
+ships alongside it in the repository and places an exact copy at
+``/output/entry.png``. Nothing about the picture is generated or altered
+here; the script exists so the entry can be rebuilt deterministically and
+so the delivered file can be checked byte for byte.
 
-Runs with no network and writes identical bytes on every run.
+Usage:
+    python3 main.py
 """
 
-import os
+from __future__ import annotations
+
+import hashlib
 import shutil
+import sys
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parent / "entry.png"
-OUTPUT_DIR = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
-OUTPUT = OUTPUT_DIR / "entry.png"
+
+SOURCE_NAME = "entry.png"
+OUTPUT_DIR = Path("/output")
+OUTPUT_PATH = OUTPUT_DIR / "entry.png"
+
+# The eight magic bytes every PNG file starts with.
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 
-def main() -> None:
+def sha256_of(path: Path) -> str:
+    """Return the hex SHA-256 digest of the file at *path*."""
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def main() -> int:
+    here = Path(__file__).resolve().parent
+    source = here / SOURCE_NAME
+
+    if not source.is_file():
+        print(f"error: source image not found: {source}", file=sys.stderr)
+        return 1
+
+    with source.open("rb") as handle:
+        if handle.read(len(PNG_SIGNATURE)) != PNG_SIGNATURE:
+            print(f"error: {source} is not a PNG file", file=sys.stderr)
+            return 1
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(SOURCE, OUTPUT)
+
+    shutil.copyfile(source, OUTPUT_PATH)
+
+    source_hash = sha256_of(source)
+    output_hash = sha256_of(OUTPUT_PATH)
+    if source_hash != output_hash:
+        print(
+            f"error: hash mismatch after copy "
+            f"({source_hash} != {output_hash})",
+            file=sys.stderr,
+        )
+        return 1
+
+    size = OUTPUT_PATH.stat().st_size
+    print(f"wrote {OUTPUT_PATH} ({size} bytes, sha256 {output_hash})")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

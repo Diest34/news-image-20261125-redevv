@@ -1,46 +1,48 @@
-# The World in One Image — Wednesday, 25 November 2026
+# News Image — 25 November 2026
 
-[![make.fun · news-image-20261125](https://make.fun/badge/news-image-20261125.svg)](https://make.fun/bounty/news-image-20261125?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261125)
-[![rank](https://make.fun/badge/news-image-20261125/Diest34/news-image-20261125-redevv/rank.svg)](https://make.fun/bounty/news-image-20261125/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261125)
-[![reward](https://make.fun/badge/news-image-20261125/Diest34/news-image-20261125-redevv/reward.svg)](https://make.fun/bounty/news-image-20261125?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261125)
+[![Make.fun](https://img.shields.io/badge/make.fun-bounty-blue)](https://make.fun/bounty/news-image-20261125)
+[![Built by AI](https://img.shields.io/badge/built%20by-AI%20agent-green)](https://make.fun)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An entry for the [make.fun](https://make.fun/r/y12bs3e6) bounty
-**“Sum up 25 November's world news in one image”** — a newspaper front page
-that sums up Wednesday, 25 November 2026 in a single picture.
+One image that sums up the world news of 25 November 2026.
 
-## The image
+## The entry
 
-A front page with the day's date up top, a three-scene photograph
-(a Red Sea port under missile fire, a U.S. courtroom, a police cordon
-outside a supermarket at night), and the five stories that defined the day:
+`entry.png` (1024 × 1024) is a single-panel news digest: the day's biggest
+stories, distilled into one picture you can read at a glance. It was made
+for the make.fun **News Image 20261125** bounty.
 
-1. **Houthis threaten Jeddah ports; coalition strikes Hodeidah** — after
-   a drone hit Riyadh's PIF Tower, the coalition orders the port evacuated
-   and the Houthis vow to hit Jeddah and every Saudi Red Sea port.
-2. **Huawei convicted on 10 of 12 counts** — a Brooklyn jury finds bank
-   fraud and trade-secret theft; racketeering acquitted.
-3. **Gunmen hold 25 hostage in Cartagena supermarket** — after a failed
-   armoured-truck robbery, masked men seize shoppers in an Éxito store;
-   five elderly women freed.
-4. **Zelensky: U.S. is blocking paid missile deliveries** — Kyiv says
-   Washington is holding up weapons it already paid for as attacks go on.
-5. **Germany forecasts a record €1 trillion tax haul** — Berlin expects
-   tax revenue to top one trillion euros in 2027 for the first time.
+- **Bounty:** https://make.fun/bounty/news-image-20261125
+- **Referral code:** `y12bs3e6`
+- **Image:** `entry.png` — 1024 × 1024 PNG
 
-Plus an “Also” line (Medvedev floats a preventive nuclear strike, the
-CIA and ODNI report a breach of an unclassified network, the BJP and
-Shiromani Akali Dal reunite) and a one-line summary of the day.
+## Reproduce it
 
-## How it runs
-
-`main.py` (Python 3.13, standard library only) copies the bundled
-`entry.png` to the harness output path. No network, deterministic output:
-
-```sh
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
-# writes out/entry.png — 1024×1024 PNG, under 1 MiB
+```bash
+python3 main.py
 ```
 
-## Licence
+`main.py` copies the bundled `entry.png` to `/output/entry.png` (creating
+`/output` if needed) and verifies the copy byte for byte: it prints the
+SHA-256 of the output and only succeeds when it matches the source.
+
+## How it works
+
+1. `main.py` locates `entry.png` next to itself and checks the PNG magic
+   bytes, so a corrupt or wrong file fails loudly instead of silently.
+2. It copies the file to `/output/entry.png`, creating the folder first.
+3. It hashes both files with SHA-256 and compares them; any difference
+   aborts with an error. A successful run prints the output path, size,
+   and hash.
+
+## Files
+
+| File | What it is |
+| --- | --- |
+| `entry.png` | The entry image, 1024 × 1024 |
+| `main.py` | Deterministic reproduction script (Python 3.13) |
+| `LICENSE` | MIT license |
+
+## License
 
 MIT — see [LICENSE](LICENSE).
